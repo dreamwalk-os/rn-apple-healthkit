@@ -53,23 +53,23 @@
         callback(@[RCTMakeError(@"startDate is required in options", nil, nil)]);
         return;
     }
+    NSPredicate * predicate = [RCTAppleHealthKit predicateForSamplesBetweenDates:startDate endDate:endDate];
 
-    [self fetchCumulativeSumStatisticsCollection:basalEnergyType
-                                                unit:cal
-                                        startDate:startDate
-                                            endDate:endDate
-                                        ascending:false
-                                            limit:HKObjectQueryNoLimit
-                                        completion:^(NSArray *results, NSError *error) {
-                                            if(results){
-                                                callback(@[[NSNull null], results]);
-                                                return;
-                                            } else {
-                                                NSLog(@"error getting basal energy burned samples: %@", error);
-                                                callback(@[RCTMakeError(@"error getting basal energy burned samples", nil, nil)]);
-                                                return;
-                                            }
-                                        }];
+    [self fetchQuantitySamplesOfType:basalEnergyType
+                                unit:cal
+                           predicate:predicate
+                           ascending:false
+                               limit:HKObjectQueryNoLimit
+                          completion:^(NSArray *results, NSError *error) {
+                              if(results){
+                                  callback(@[[NSNull null], results]);
+                                  return;
+                              } else {
+                                  callback(@[RCTJSErrorFromNSError(error)]);
+                                  return;
+                              }
+                          }];
+
 }
 
 
